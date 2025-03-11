@@ -1,0 +1,10 @@
+{
+  "builds": [{
+    "src": ".",
+    "use": "docker"
+  }],
+  "routes": [{
+    "src": "/.*",
+    "dest": "main.py"
+  }]
+}
