@@ -5,9 +5,10 @@ import requests
 from datetime import datetime
 import os
 
-# Instagram credentials
-BOT_USERNAME = os.getenv('BOT_USERNAME')
-BOT_PASSWORD = os.getenv('BOT_PASSWORD')
+BOT_USERNAME = os.getenv("BOT_USERNAME")
+BOT_PASSWORD = os.getenv("BOT_PASSWORD")
+
+bot.login(username=BOT_USERNAME, password=BOT_PASSWORD, use_cookie=True)
 
 # Personal details
 OWNER_USERNAME = "mr.king_op"
