@@ -1,18 +1,18 @@
-# Python 3.10 image use करें
+# Use official Python image
 FROM python:3.10
 
-# Work directory set करें
+# Set the working directory in the container
 WORKDIR /app
 
-# Dependencies copy करें
+# Copy the requirements file
 COPY requirements.txt .
 
-# Pip upgrade करें और dependencies install करें
+# Upgrade pip and install dependencies
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-# Main script copy करें
+# Copy the rest of the project files
 COPY . .
 
-# App को run करें
+# Command to run the application
 CMD ["python", "main.py"]
