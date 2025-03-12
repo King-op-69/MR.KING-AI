@@ -7,9 +7,11 @@ WORKDIR /app
 # Copy the requirements file
 COPY requirements.txt .
 
-# Upgrade pip and install dependencies
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+# Upgrade pip, setuptools, and wheel (important for instabot issue)
+RUN pip install --upgrade pip setuptools wheel
+
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the project files
 COPY . .
