@@ -1,14 +1,13 @@
-from instabot import Bot
+import os
 import time
 import random
 import requests
 from datetime import datetime
-import os
+from instabot import Bot
 
+# Environment variables se credentials fetch karein
 BOT_USERNAME = os.getenv("BOT_USERNAME")
 BOT_PASSWORD = os.getenv("BOT_PASSWORD")
-
-bot.login(username=BOT_USERNAME, password=BOT_PASSWORD, use_cookie=True)
 
 # Personal details
 OWNER_USERNAME = "mr.king_op"
@@ -28,7 +27,7 @@ GOOD_NIGHT = "Good night, doston! 🌙 Sweet dreams!"
 # Function to fetch free proxies
 def fetch_proxies():
     response = requests.get('https://www.proxy-list.download/api/v1/get?type=http')
-    proxies = response.text.strip().split('\\r\\n')
+    proxies = response.text.strip().split('\r\n')
     return [proxy for proxy in proxies if proxy]
 
 # Function to get a random proxy
@@ -41,7 +40,7 @@ def clear_sessions():
     if os.path.exists("config"):
         os.system("rm -rf config")
 
-# Login function with 2FA prompt
+# Login function with proxy support
 def login():
     clear_sessions()
     proxy = get_random_proxy()
