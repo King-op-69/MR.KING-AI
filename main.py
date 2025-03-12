@@ -5,12 +5,12 @@ import requests
 from datetime import datetime
 from instabot import Bot
 
-# Environment variables se credentials fetch karein
-BOT_USERNAME = os.getenv("BOT_USERNAME")
-BOT_PASSWORD = os.getenv("BOT_PASSWORD")
+# Instagram credentials
+BOT_USERNAME = "_rip.king_"  # Direct username
+BOT_PASSWORD = os.getenv("BOT_PASSWORD")  # Secure password from environment variable
 
 # Personal details
-OWNER_USERNAME = "mr.king_op"
+OWNER_USERNAME = "_mr.king_op_"  # Corrected owner username
 WIFE_USERNAME = "ursxlisaaa"
 
 # Messages
@@ -26,9 +26,12 @@ GOOD_NIGHT = "Good night, doston! 🌙 Sweet dreams!"
 
 # Function to fetch free proxies
 def fetch_proxies():
-    response = requests.get('https://www.proxy-list.download/api/v1/get?type=http')
-    proxies = response.text.strip().split('\r\n')
-    return [proxy for proxy in proxies if proxy]
+    try:
+        response = requests.get('https://www.proxy-list.download/api/v1/get?type=http')
+        proxies = response.text.strip().split("\r\n")
+        return [proxy for proxy in proxies if proxy]
+    except:
+        return []
 
 # Function to get a random proxy
 def get_random_proxy():
@@ -45,16 +48,11 @@ def login():
     clear_sessions()
     proxy = get_random_proxy()
     if proxy:
-        print(f'Using Proxy: {proxy}')
+        print(f"Using Proxy: {proxy}")
 
-    bot = Bot(proxy=f'http://{proxy}' if proxy else None)
+    bot = Bot(proxy=f"http://{proxy}" if proxy else None)
     bot.login(username=BOT_USERNAME, password=BOT_PASSWORD, use_cookie=True)
-
-    # Check if 2FA required
-    if bot.api.last_response.status_code == 400:
-        otp = input("Enter the OTP received on your phone: ")
-        bot.login(username=BOT_USERNAME, password=BOT_PASSWORD, use_cookie=True, verification_code=otp)
-
+    
     return bot
 
 # Message handling function
@@ -63,36 +61,37 @@ def handle_messages(bot):
         messages = bot.get_messages()
         for message_data in messages:
             if isinstance(message_data, dict):
-                user = message_data.get('user', {}).get('username', '')
-                text = message_data.get('text', '').lower()
+                user = message_data.get("user", {}).get("username", "")
+                text = message_data.get("text", "").lower()
 
                 if not user or not text:
                     continue
 
                 # Protect your wife
                 if WIFE_USERNAME in text and "bad" in text:
-                    bot.send_message("Meri bhabhi ke bare me aise mat bol! ⚠️", [message_data['user']['pk']])
+                    bot.send_message("Meri bhabhi ke bare me aise mat bol! ⚠️", [message_data["user"]["pk"]])
 
                 # Special reply for owner
                 elif user == OWNER_USERNAME:
-                    bot.send_message(f"Bhai @_mr.king_op_! Tu aa gaya? 😎 Kya haal hai?", [message_data['user']['pk']])
+                    bot.send_message(f"Bhai @_mr.king_op_! Tu aa gaya? 😎 Kya haal hai?", [message_data["user"]["pk"]])
 
                 # Good morning and good night messages
                 now = datetime.now().time()
                 if now.hour == 7:
-                    bot.send_message(GOOD_MORNING, [message_data['user']['pk']])
+                    bot.send_message(GOOD_MORNING, [message_data["user"]["pk"]])
                 elif now.hour == 22:
-                    bot.send_message(GOOD_NIGHT, [message_data['user']['pk']])
+                    bot.send_message(GOOD_NIGHT, [message_data["user"]["pk"]])
 
                 # Roast random members
                 else:
-                    bot.send_message(random.choice(ROAST_REPLY), [message_data['user']['pk']])
+                    bot.send_message(random.choice(ROAST_REPLY), [message_data["user"]["pk"]])
 
         # Auto-switch proxy every 10 minutes without logging out
         time.sleep(600)
         print("Switching Proxy...")
         proxy = get_random_proxy()
-        bot.api.session.proxies.update({"http": f'http://{proxy}', "https": f'http://{proxy}'})
+        if proxy:
+            bot.api.session.proxies.update({"http": f"http://{proxy}", "https": f"http://{proxy}"})
 
 if __name__ == "__main__":
     bot = login()
