@@ -1,1 +1,32 @@
-# Placeholder content for templates/index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>MR.KING AI - Admin Panel</title>
+</head>
+<body>
+    <h2>MR.KING AI - Instagram Bot</h2>
+    <input type="text" id="username" placeholder="Instagram Username">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <button onclick="startBot()">Start Bot</button>
+
+    <script>
+        function login() {
+            fetch('/login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    username: document.getElementById("username").value,
+                    password: document.getElementById("password").value
+                })
+            }).then(res => res.json()).then(data => alert(data.message));
+        }
+
+        function startBot() {
+            fetch('/start-bot', {
+                method: 'POST'
+            }).then(res => res.json()).then(data => alert(data.message));
+        }
+    </script>
+</body>
+</html>
