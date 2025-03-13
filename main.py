@@ -30,7 +30,8 @@ GOOD_NIGHT = "Good night, doston! 🌙"
 # Remove old sessions safely
 def clear_sessions():
     if os.path.exists("config"):
-        os.system("rm -rf config")
+        import shutil
+        shutil.rmtree("config")  # ज़्यादा सुरक्षित तरीका
 
 # Secure Login with Session Management
 def login():
@@ -95,6 +96,7 @@ def start_bot():
     else:
         return jsonify({"status": "Error in Login!"})
 
+# Gunicorn Compatibility (Correct Port Handling)
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
