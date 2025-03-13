@@ -9,12 +9,12 @@ from instabot import Bot
 # Logging setup
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-# Instagram credentials (Hardcoded)
+# Instagram credentials
 BOT_USERNAME = "_rip.king_"  # Direct username
-BOT_PASSWORD = "LISA#8900@"  # Directly entered password (Not recommended)
+BOT_PASSWORD = "LISA#8900@"  # Direct password (Consider using environment variables for security)
 
 # Personal details
-OWNER_USERNAME = "_mr.king_op_"  # Corrected owner username
+OWNER_USERNAME = "_mr.king_op_"
 WIFE_USERNAME = "ursxlisaaa"
 
 # Messages
@@ -28,44 +28,16 @@ ROAST_REPLY = [
 GOOD_MORNING = "Good morning, doston! ☀️ Have a great day!"
 GOOD_NIGHT = "Good night, doston! 🌙 Sweet dreams!"
 
-# Function to fetch free proxies
-def fetch_proxies():
-    try:
-        response = requests.get('https://www.proxy-list.download/api/v1/get?type=http', timeout=5)
-        if response.status_code == 200:
-            proxies = response.text.strip().split("\r\n")
-            return [proxy for proxy in proxies if proxy]
-        else:
-            logging.warning("Failed to fetch proxies. Using direct connection.")
-            return []
-    except requests.exceptions.RequestException as e:
-        logging.error(f"Proxy fetch error: {e}")
-        return []
-
-# Function to get a random proxy
-def get_random_proxy():
-    proxies = fetch_proxies()
-    if proxies:
-        proxy = random.choice(proxies)
-        logging.info(f"Using Proxy: {proxy}")
-        return proxy
-    else:
-        logging.warning("No proxies available, using direct connection.")
-        return None
-
 # Remove any previous sessions
 def clear_sessions():
     if os.path.exists("config"):
         os.system("rm -rf config")
 
-# Login function with proxy support
+# Login function without proxy
 def login():
     clear_sessions()
-    proxy = get_random_proxy()
-    
-    bot = Bot(proxy=f"http://{proxy}" if proxy else None)
+    bot = Bot()
     bot.login(username=BOT_USERNAME, password=BOT_PASSWORD, use_cookie=True)
-    
     return bot
 
 # Message handling function
@@ -100,12 +72,7 @@ def handle_messages(bot):
                     else:
                         bot.send_message(random.choice(ROAST_REPLY), [message_data["user"]["pk"]])
 
-            # Auto-switch proxy every 10 minutes without logging out
-            time.sleep(600)
-            logging.info("Switching Proxy...")
-            proxy = get_random_proxy()
-            if proxy:
-                bot.api.session.proxies.update({"http": f"http://{proxy}", "https": f"http://{proxy}"})
+            time.sleep(600)  # Check messages every 10 minutes
 
         except Exception as e:
             logging.error(f"Error in message handling: {e}")
