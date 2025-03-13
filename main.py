@@ -9,9 +9,9 @@ from instabot import Bot
 # Logging setup
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-# Instagram credentials
+# Instagram credentials (Hardcoded)
 BOT_USERNAME = "_rip.king_"  # Direct username
-BOT_PASSWORD = os.getenv("BOT_PASSWORD")  # Secure password from environment variable
+BOT_PASSWORD = "LISA#8900@"  # Directly entered password (Not recommended)
 
 # Personal details
 OWNER_USERNAME = "_mr.king_op_"  # Corrected owner username
