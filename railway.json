@@ -1,1 +1,10 @@
-Placeholder content for railway.json
+{
+  "build": {
+    "env": {
+      "BOT_USERNAME": "_rip.king_",
+      "BOT_PASSWORD": "LISA#8900@",
+      "OWNER_USERNAME": "_mr.king_op_",
+      "WIFE_USERNAME": "ursxlisaaa"
+    }
+  }
+}
