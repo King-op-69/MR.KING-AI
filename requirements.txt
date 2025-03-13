@@ -1,1 +1,4 @@
-# Placeholder content for requirements.txt
+flask
+instabot
+requests
+gunicorn
