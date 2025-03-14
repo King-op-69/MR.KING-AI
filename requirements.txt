@@ -1,4 +1,4 @@
 flask
-instabot
-requests
 gunicorn
+instabot==0.117.0
+logging
