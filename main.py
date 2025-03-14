@@ -2,28 +2,27 @@ import os
 import time
 import random
 import logging
+import threading
 from datetime import datetime
 from flask import Flask, request, jsonify
 from instabot import Bot
 
-# Flask App for Web Control
+# Flask App Setup
 app = Flask(__name__)
 
-# लॉगिंग सेटअप (बेहतर डिबगिंग के लिए)
+# लॉगिंग सेटअप
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-# इंस्टाग्राम क्रेडेंशियल्स
-BOT_USERNAME = os.getenv("BOT_USERNAME", "_rip.king_")  
-BOT_PASSWORD = os.getenv("BOT_PASSWORD", "LISA#8900@")  
-OWNER_USERNAME = os.getenv("OWNER_USERNAME", "_mr.king_op_")
-WIFE_USERNAME = os.getenv("WIFE_USERNAME", "ursxlisaaa")
+# इंस्टाग्राम क्रेडेंशियल्स (Railway ENV Variables से लेंगे)
+BOT_USERNAME = os.getenv("BOT_USERNAME")
+BOT_PASSWORD = os.getenv("BOT_PASSWORD")
+OWNER_USERNAME = os.getenv("OWNER_USERNAME")
+WIFE_USERNAME = os.getenv("WIFE_USERNAME")
 
 # मैसेज टेम्प्लेट्स
 WELCOME_MSG = "Welcome to the group! 🎉 How can I assist you today?"
 HELP_MSG = "You can ask me anything about our services or just say hi! 😊"
-ROAST_REPLY = [
-    "Bhai, zyada soch mat!", "Fast soch na! 🔥", "Coding se fast hai meri soch! 😎"
-]
+ROAST_REPLY = ["Bhai, zyada soch mat!", "Fast soch na! 🔥", "Coding se fast hai meri soch! 😎"]
 GOOD_MORNING = "Good morning, doston! ☀️"
 GOOD_NIGHT = "Good night, doston! 🌙"
 
@@ -38,7 +37,7 @@ def login():
     bot = Bot()
     
     try:
-        bot.login(username=BOT_USERNAME, password=BOT_PASSWORD, use_cookie=True)
+        bot.login(username=BOT_USERNAME, password=BOT_PASSWORD, use_cookie=False)  # Railway के लिए use_cookie=False
         logging.info("✅ Login Successful!")
         return bot
     except Exception as e:
@@ -47,15 +46,18 @@ def login():
 
 # AI-बेस्ड रिप्लाई फंक्शन
 def generate_reply(message):
+    message = message.lower()
+    
     if "help" in message:
         return HELP_MSG
     if "good morning" in message:
         return GOOD_MORNING
     if "good night" in message:
         return GOOD_NIGHT
+    
     return random.choice(ROAST_REPLY)
 
-# मैसेज हैंडलिंग का सिस्टम
+# मैसेज हैंडलिंग का सिस्टम (Thread में चलाना होगा)
 def handle_messages(bot):
     while True:
         try:
@@ -86,17 +88,18 @@ def handle_messages(bot):
             logging.error(f"⚠️ Error in message handling: {e}")
             time.sleep(30)  # एरर आने पर 30 सेकंड बाद फिर ट्राई करेगा
 
-# 📌 बॉट स्टार्ट करने के लिए API
+# 📌 बॉट स्टार्ट करने के लिए API (Thread में रन करेगा)
 @app.route('/start-bot', methods=['GET'])
 def start_bot():
     bot = login()
     if bot:
-        handle_messages(bot)
+        thread = threading.Thread(target=handle_messages, args=(bot,))
+        thread.start()
         return jsonify({"status": "✅ Bot Started Successfully!"})
     else:
         return jsonify({"status": "❌ Error in Login!"})
 
 # 📌 Gunicorn के लिए पोर्ट फिक्स
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+    port = int(os.getenv("PORT", 5000))  # Railway के लिए dynamic port
+    app.run(host='0.0.0.0', port=port, debug=True)
