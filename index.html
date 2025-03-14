@@ -4,51 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MR.KING AI - Admin Panel</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #0f172a;
-            color: white;
-            text-align: center;
-            padding: 50px;
-        }
-        input, button {
-            padding: 10px;
-            margin: 10px;
-            font-size: 16px;
-        }
-    </style>
 </head>
 <body>
     <h1>MR.KING AI - Admin Panel</h1>
-    <h3>Login to Instagram</h3>
-    <input type="text" id="username" placeholder="Enter Instagram Username">
-    <input type="password" id="password" placeholder="Enter Instagram Password">
-    <button onclick="login()">Login</button>
-
-    <h3>Start Bot</h3>
-    <button onclick="startBot()">Start</button>
-
-    <p id="response"></p>
+    <button onclick="loginInstagram()">Login to Instagram</button>
+    <button onclick="startBot()">Start Bot</button>
 
     <script>
-        function login() {
-            let username = document.getElementById("username").value;
-            let password = document.getElementById("password").value;
-
-            fetch("/login", {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({username, password})
-            })
-            .then(response => response.json())
-            .then(data => document.getElementById("response").innerText = data.message);
+        function loginInstagram() {
+            fetch('/login-instagram')
+                .then(response => response.json())
+                .then(data => alert(data.status));
         }
 
         function startBot() {
-            fetch("/start-bot", {method: "POST"})
-            .then(response => response.json())
-            .then(data => document.getElementById("response").innerText = data.message);
+            fetch('/start-bot')
+                .then(response => response.json())
+                .then(data => alert(data.status));
         }
     </script>
 </body>
