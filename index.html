@@ -1,31 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MR.KING AI - Admin Panel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0f172a;
+            color: white;
+            text-align: center;
+            padding: 50px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px;
+            font-size: 16px;
+        }
+    </style>
 </head>
 <body>
-    <h2>MR.KING AI - Instagram Bot</h2>
-    <input type="text" id="username" placeholder="Instagram Username">
-    <input type="password" id="password" placeholder="Password">
+    <h1>MR.KING AI - Admin Panel</h1>
+    <h3>Login to Instagram</h3>
+    <input type="text" id="username" placeholder="Enter Instagram Username">
+    <input type="password" id="password" placeholder="Enter Instagram Password">
     <button onclick="login()">Login</button>
-    <button onclick="startBot()">Start Bot</button>
+
+    <h3>Start Bot</h3>
+    <button onclick="startBot()">Start</button>
+
+    <p id="response"></p>
 
     <script>
         function login() {
-            fetch('/login', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    username: document.getElementById("username").value,
-                    password: document.getElementById("password").value
-                })
-            }).then(res => res.json()).then(data => alert(data.message));
+            let username = document.getElementById("username").value;
+            let password = document.getElementById("password").value;
+
+            fetch("/login", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({username, password})
+            })
+            .then(response => response.json())
+            .then(data => document.getElementById("response").innerText = data.message);
         }
 
         function startBot() {
-            fetch('/start-bot', {
-                method: 'POST'
-            }).then(res => res.json()).then(data => alert(data.message));
+            fetch("/start-bot", {method: "POST"})
+            .then(response => response.json())
+            .then(data => document.getElementById("response").innerText = data.message);
         }
     </script>
 </body>
