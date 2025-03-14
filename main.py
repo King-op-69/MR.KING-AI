@@ -5,7 +5,7 @@ import logging
 import threading
 from datetime import datetime
 from flask import Flask, request, jsonify
-from instabot import Bot
+from playwright.sync_api import sync_playwright
 
 # Flask App Setup
 app = Flask(__name__)
@@ -13,38 +13,38 @@ app = Flask(__name__)
 # लॉगिंग सेटअप
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-# इंस्टाग्राम क्रेडेंशियल्स (Railway ENV Variables से लेंगे)
-BOT_USERNAME = os.getenv("BOT_USERNAME")
-BOT_PASSWORD = os.getenv("BOT_PASSWORD")
-OWNER_USERNAME = os.getenv("OWNER_USERNAME")
-WIFE_USERNAME = os.getenv("WIFE_USERNAME")
+# Instagram Credentials (Login Panel से आएंगे)
+INSTAGRAM_USERNAME = None
+INSTAGRAM_PASSWORD = None
 
-# मैसेज टेम्प्लेट्स
-WELCOME_MSG = "Welcome to the group! \U0001F389 How can I assist you today?"
-HELP_MSG = "You can ask me anything about our services or just say hi! \U0001F60A"
-ROAST_REPLY = ["Bhai, zyada soch mat!", "Fast soch na! \U0001F525", "Coding se fast hai meri soch! \U0001F60E"]
-GOOD_MORNING = "Good morning, doston! \u2600\ufe0f"
-GOOD_NIGHT = "Good night, doston! \U0001F319"
+# Bot Status
+bot_running = False
 
-# सेशन क्लियर करने का फ़ंक्शन
-def clear_sessions():
-    if os.path.exists("config"):
-        os.system("rm -rf config")
+# Messages Templates
+WELCOME_MSG = "Welcome to the group! 🎉 How can I assist you today?"
+HELP_MSG = "You can ask me anything about our services or just say hi! 😊"
+ROAST_REPLY = ["Bhai, zyada soch mat!", "Fast soch na! 🔥", "Coding se fast hai meri soch! 😎"]
+GOOD_MORNING = "Good morning, doston! ☀️"
+GOOD_NIGHT = "Good night, doston! 🌙"
 
-# इंस्टाग्राम लॉगिन फंक्शन
-def login():
-    clear_sessions()
-    bot = Bot()
-    
-    try:
-        bot.login(username=BOT_USERNAME, password=BOT_PASSWORD, use_cookie=False)
-        logging.info("\u2705 Login Successful!")
-        return bot
-    except Exception as e:
-        logging.error(f"\u274C Login Failed: {e}")
-        return None
+# Instagram Secure Login via Web Automation
+def login_instagram(username, password):
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=False)  # Headless=False for manual captcha solving
+        page = browser.new_page()
+        page.goto("https://www.instagram.com/accounts/login/")
+        
+        time.sleep(5)  # Wait for page to load
+        
+        # Enter Username & Password
+        page.fill("input[name='username']", username)
+        page.fill("input[name='password']", password)
+        page.click("button[type='submit']")
+        
+        time.sleep(10)  # Wait for login process
+        browser.close()
 
-# AI-बेस्ड रिप्लाई फंक्शन
+# AI-Powered Reply System
 def generate_reply(message):
     message = message.lower()
     
@@ -57,56 +57,51 @@ def generate_reply(message):
     
     return random.choice(ROAST_REPLY)
 
-# मैसेज हैंडलिंग का सिस्टम (Thread में चलाना होगा)
-def handle_messages(bot):
-    while True:
+# Message Handling
+def handle_messages():
+    global bot_running
+    bot_running = True
+    
+    while bot_running:
         try:
-            messages = bot.get_messages()
-            for msg in messages:
-                user = msg.get("user", {}).get("username", "")
-                text = msg.get("text", "").lower()
-
-                if not user or not text:
-                    continue
-
-                if WIFE_USERNAME in text and "bad" in text:
-                    bot.send_message("Meri bhabhi ke bare me aise mat bol! \u26A0\ufe0f", [msg["user"]["pk"]])
-
-                elif user == OWNER_USERNAME:
-                    bot.send_message(f"Bhai @{OWNER_USERNAME}! Tu aa gaya? \U0001F60E Kya haal hai?", [msg["user"]["pk"]])
-
-                else:
-                    reply = generate_reply(text)
-                    bot.send_message(reply, [msg["user"]["pk"]])
-
-            time.sleep(600)
+            # Messages Handling Logic (To Be Implemented)
+            time.sleep(600)  # Check messages every 10 min
 
         except Exception as e:
             logging.error(f"⚠️ Error in message handling: {e}")
-            time.sleep(30)
+            time.sleep(30)  # Retry after error
 
-# API ROUTES
+# 📌 API Routes
 @app.route('/')
 def home():
-    return "MR.KING AI is running successfully!"
+    return "MR.KING AI is Running Successfully!"
+
+@app.route('/login', methods=['POST'])
+def login():
+    global INSTAGRAM_USERNAME, INSTAGRAM_PASSWORD
+    data = request.json
+    INSTAGRAM_USERNAME = data.get("username")
+    INSTAGRAM_PASSWORD = data.get("password")
+
+    if INSTAGRAM_USERNAME and INSTAGRAM_PASSWORD:
+        login_instagram(INSTAGRAM_USERNAME, INSTAGRAM_PASSWORD)
+        return jsonify({"status": "success", "message": "Instagram Logged In!"})
+    else:
+        return jsonify({"status": "error", "message": "Invalid Credentials!"})
 
 @app.route('/start-bot', methods=['GET'])
 def start_bot():
-    bot = login()
-    if bot:
-        thread = threading.Thread(target=handle_messages, args=(bot,))
-        thread.start()
-        return jsonify({"status": "✅ Bot Started Successfully!"})
+    global bot_running
+    if INSTAGRAM_USERNAME and INSTAGRAM_PASSWORD:
+        if not bot_running:
+            thread = threading.Thread(target=handle_messages)
+            thread.start()
+            return jsonify({"status": "success", "message": "Bot Started Successfully!"})
+        else:
+            return jsonify({"status": "error", "message": "Bot is Already Running!"})
     else:
-        return jsonify({"status": "❌ Error in Login!"})
+        return jsonify({"status": "error", "message": "Login First!"})
 
-@app.route('/send-message', methods=['POST'])
-def send_message():
-    data = request.json
-    message = data.get("message", "No message received")
-    return jsonify({"response": f"AI received: {message}"})
-
-# Gunicorn के लिए पोर्ट फिक्स
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))
     app.run(host='0.0.0.0', port=port, debug=True)
