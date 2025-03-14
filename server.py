@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 import os
+import subprocess
 
 app = Flask(__name__)
 
@@ -17,18 +18,21 @@ def login():
     INSTAGRAM_USERNAME = data.get("username")
     INSTAGRAM_PASSWORD = data.get("password")
 
-    if INSTAGRAM_USERNAME and INSTAGRAM_PASSWORD:  
-        return jsonify({"status": "success", "message": "Logged in!"})  
-    else:  
+    if INSTAGRAM_USERNAME and INSTAGRAM_PASSWORD:
+        os.environ["BOT_USERNAME"] = INSTAGRAM_USERNAME
+        os.environ["BOT_PASSWORD"] = INSTAGRAM_PASSWORD
+        return jsonify({"status": "success", "message": "Logged in!"})
+    else:
         return jsonify({"status": "error", "message": "Invalid credentials!"})
 
 @app.route('/start-bot', methods=['POST'])
 def start_bot():
     if INSTAGRAM_USERNAME and INSTAGRAM_PASSWORD:
+        subprocess.Popen(["python", "main.py"])
         return jsonify({"status": "success", "message": "Bot started!"})
     else:
         return jsonify({"status": "error", "message": "Login first!"})
 
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))  # Dynamic Port Handling
-    app.run(host="0.0.0.0", port=port)
+if __name__ == '__main__':
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
