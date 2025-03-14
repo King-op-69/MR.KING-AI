@@ -1,11 +1,5 @@
 {
   "build": {
-    "env": {
-      "BOT_USERNAME": "_mr.king_o.p._20",
-      "BOT_PASSWORD": "MR.KINGOP",
-      "OWNER_USERNAME": "_mr.king_op_",
-      "WIFE_USERNAME": "ursxlisaaa"
-    },
     "builder": "NIXPACKS"
   },
   "deploy": {
