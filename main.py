@@ -27,10 +27,10 @@ GOOD_NIGHT = "Good night! 🌙"
 # Function to Start Instagram Web Login
 def start_instagram_login():
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(headless=True, args=["--no-sandbox", "--disable-setuid-sandbox"])
         page = browser.new_page()
         page.goto("https://www.instagram.com/accounts/login/")
-        input("👉 Login manually and press Enter here...")
+        time.sleep(5)  # Wait for the page to load
         cookies = page.context.cookies()
         with open("cookies.json", "w") as f:
             f.write(str(cookies))
