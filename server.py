@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder="templates")
 
 INSTAGRAM_USERNAME = None
 INSTAGRAM_PASSWORD = None
@@ -29,4 +29,4 @@ def start_bot():
         return jsonify({"status": "error", "message": "Login first!"})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000, debug=True)
