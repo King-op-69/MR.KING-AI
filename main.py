@@ -4,16 +4,16 @@ import random
 import logging
 import threading
 from datetime import datetime
-from flask import Flask, request, jsonify
+from flask import Flask, render_template, request, jsonify
 from playwright.sync_api import sync_playwright
 
 # Flask App Setup
-app = Flask(__name__)
+app = Flask(__name__, template_folder="templates")
 
 # Logging Setup
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-# Instagram Credentials (Railway ENV Variables से लेंगे)
+# Instagram Credentials
 OWNER_USERNAME = os.getenv("OWNER_USERNAME", "_mr.king_op_")
 WIFE_USERNAME = os.getenv("WIFE_USERNAME", "ursxlisaaa")
 
@@ -36,6 +36,11 @@ def start_instagram_login():
             f.write(str(cookies))
         browser.close()
     return "✅ Instagram Login Successful!"
+
+# API Route: Home Page
+@app.route('/')
+def home():
+    return render_template("index.html")
 
 # API Route: Start Instagram Web Login
 @app.route('/login-instagram', methods=['GET'])
