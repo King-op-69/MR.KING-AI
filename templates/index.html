@@ -1,1 +1,27 @@
-<h1>Hello, Flask!</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MR.KING AI - Admin Panel</title>
+</head>
+<body>
+    <h1>MR.KING AI - Admin Panel</h1>
+    <button onclick="loginInstagram()">Login to Instagram</button>
+    <button onclick="startBot()">Start Bot</button>
+
+    <script>
+        function loginInstagram() {
+            fetch('/login-instagram')
+                .then(response => response.json())
+                .then(data => alert(data.status));
+        }
+
+        function startBot() {
+            fetch('/start-bot')
+                .then(response => response.json())
+                .then(data => alert(data.status));
+        }
+    </script>
+</body>
+</html>
