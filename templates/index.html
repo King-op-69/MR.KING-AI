@@ -3,84 +3,69 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MR.KING AI - Admin Panel</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body {
-            background-color: #0a0f1e;
-            color: #00bfff;
+            background-image: url('https://w.wallhaven.cc/full/x8/wallhaven-x86veo.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             font-family: Arial, sans-serif;
+            color: #00aaff;
             text-align: center;
+            padding: 20px;
         }
         .container {
-            margin-top: 50px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            display: inline-block;
         }
         input, button {
+            display: block;
+            width: 80%;
+            margin: 10px auto;
             padding: 10px;
-            margin: 10px;
-            border: none;
             border-radius: 5px;
-            font-size: 16px;
-        }
-        input {
-            width: 250px;
-            background-color: #1b2336;
-            color: white;
+            border: none;
         }
         button {
-            background-color: #007bff;
+            background: #007bff;
             color: white;
             cursor: pointer;
         }
         button:hover {
-            background-color: #0056b3;
-        }
-        .gojo-image {
-            width: 300px;
-            margin-top: 20px;
-            border-radius: 10px;
+            background: #0056b3;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>MR.KING AI - Admin Panel</h1>
-        <img src="https://i.imgur.com/your-gojo-image.jpg" class="gojo-image" alt="Gojo Satoru Theme">
-        <h2>Admin Login</h2>
-        <input type="text" id="adminID" placeholder="Enter Admin ID"><br>
-        <input type="password" id="adminPass" placeholder="Enter Password"><br>
-        <button onclick="adminLogin()">Login</button>
-        <h2>Instagram Login</h2>
-        <input type="text" id="instaID" placeholder="Enter Instagram ID"><br>
-        <input type="password" id="instaPass" placeholder="Enter Password"><br>
-        <button onclick="loginInstagram()">Login to Instagram</button>
-        <button onclick="startBot()">Start Bot</button>
-    </div>
-    <script>
-        function adminLogin() {
-            let id = document.getElementById("adminID").value;
-            let pass = document.getElementById("adminPass").value;
-            if (id === "admin" && pass === "password") {
-                alert("✅ Admin Login Successful!");
-            } else {
-                alert("❌ Invalid Admin Credentials");
-            }
-        }
-        function loginInstagram() {
-            let instaID = document.getElementById("instaID").value;
-            let instaPass = document.getElementById("instaPass").value;
-            fetch('/login-instagram', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: instaID, password: instaPass })
-            })
+        <h3>👓 Gojo Satoru Theme</h3><h2>Admin Login</h2>
+    <input type="text" placeholder="Enter Admin ID">
+    <input type="password" placeholder="Enter Password">
+    <button>Login</button>
+
+    <h2>Instagram Login</h2>
+    <input type="text" placeholder="Enter Instagram ID">
+    <input type="password" placeholder="Enter Password">
+    <button onclick="loginInstagram()">Login to Instagram</button>
+    <button onclick="startBot()">Start Bot</button>
+</div>
+
+<script>
+    function loginInstagram() {
+        fetch('/login-instagram')
             .then(response => response.json())
             .then(data => alert(data.status));
-        }
-        function startBot() {
-            fetch('/start-bot')
-                .then(response => response.json())
-                .then(data => alert(data.status));
-        }
-    </script>
+    }
+
+    function startBot() {
+        fetch('/start-bot')
+            .then(response => response.json())
+            .then(data => alert(data.status));
+    }
+</script>
+
 </body>
 </html>
